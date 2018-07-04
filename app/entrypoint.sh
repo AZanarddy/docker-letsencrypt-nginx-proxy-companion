@@ -10,16 +10,6 @@ function check_deprecated_env_var {
     fi
 }
 
-function check_docker_socket {
-    if [[ $DOCKER_HOST == unix://* ]]; then
-        socket_file=${DOCKER_HOST#unix://}
-        if [[ ! -S $socket_file ]]; then
-            echo "Error: you need to share your Docker host socket with a volume at $socket_file" >&2
-            echo "Typically you should run your container with: '-v /var/run/docker.sock:$socket_file:ro'" >&2
-            exit 1
-        fi
-    fi
-}
 
 function check_writable_directory {
     local dir="$1"

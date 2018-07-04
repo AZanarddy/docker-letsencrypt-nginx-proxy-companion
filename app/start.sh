@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # SIGTERM-handler
 term_handler() {
     [[ -n "$docker_gen_pid" ]] && kill $docker_gen_pid
@@ -16,7 +18,7 @@ trap 'term_handler' INT QUIT TERM
 /app/letsencrypt_service &
 letsencrypt_service_pid=$!
 
-docker-gen -watch -notify '/app/signal_le_service' -wait 15s:60s /app/letsencrypt_service_data.tmpl /app/letsencrypt_service_data &
+docker-gen -endpoint tcp://${DOCKER_HOST} -tlsverify -tlscacert="${DOCKER_CERT_PATH}/ca.pem" -tlscert="${DOCKER_CERT_PATH}/cert.pem" -tlskey="${DOCKER_CERT_PATH}/key.pem" -watch -notify '/app/signal_le_service' -wait 15s:60s /app/letsencrypt_service_data.tmpl /app/letsencrypt_service_data &
 docker_gen_pid=$!
 
 # wait "indefinitely"

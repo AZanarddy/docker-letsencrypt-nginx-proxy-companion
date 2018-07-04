@@ -80,12 +80,12 @@ function docker_api {
     fi
     if [[ $DOCKER_HOST == unix://* ]]; then
         curl_opts+=(--unix-socket ${DOCKER_HOST#unix://})
-        scheme='http://localhost'
+        scheme='https://localhost'
     else
-        scheme="http://${DOCKER_HOST#*://}"
+        scheme="https://${DOCKER_HOST#*://}"
     fi
     [[ $method = "POST" ]] && curl_opts+=(-H 'Content-Type: application/json')
-    curl "${curl_opts[@]}" -X${method} ${scheme}$1
+    curl --cert ${DOCKER_CERT_PATH}/cert.pem --key ${DOCKER_CERT_PATH}/key.pem --insecure "${curl_opts[@]}" -X${method} ${scheme}$1
 }
 
 function docker_exec {
